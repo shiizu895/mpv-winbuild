@@ -1,0 +1,42 @@
+From ed6e5f713818c1bc974d780c3e4f79c596812043 Mon Sep 17 00:00:00 2001
+From: shiizu895 <60022265+shiizu895@users.noreply.github.com>
+Date: Sat, 26 Apr 2025 13:16:10 +0200
+Subject: [PATCH] ffmpeg: reset to working commit
+
+---
+ packages/ffmpeg.cmake | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/packages/ffmpeg.cmake b/packages/ffmpeg.cmake
+index 49a0f6e..9085bb7 100644
+--- a/packages/ffmpeg.cmake
++++ b/packages/ffmpeg.cmake
+@@ -37,8 +37,6 @@ ExternalProject_Add(ffmpeg
+         libplacebo
+         libzvbi
+         libaribcaption
+-        aom
+-        svtav1
+         dav1d
+         vapoursynth
+         ${ffmpeg_uavs3d}
+@@ -50,6 +48,7 @@ ExternalProject_Add(ffmpeg
+     SOURCE_DIR ${SOURCE_LOCATION}
+     GIT_CLONE_FLAGS "--sparse --filter=tree:0"
+     GIT_CLONE_POST_COMMAND "sparse-checkout set --no-cone /* !tests/ref/fate"
++    GIT_RESET n7.0.2
+     UPDATE_COMMAND ""
+     CONFIGURE_COMMAND ${EXEC} CONF=1 <SOURCE_DIR>/configure
+         --cross-prefix=${TARGET_ARCH}-
+@@ -86,8 +85,6 @@ ExternalProject_Add(ffmpeg
+         --enable-libwebp
+         --enable-libx264
+         --enable-libx265
+-        --enable-libaom
+-        --enable-libsvtav1
+         --enable-libdav1d
+         ${ffmpeg_davs2_cmd}
+         ${ffmpeg_uavs3d_cmd}
+-- 
+2.49.0.windows.1
+
