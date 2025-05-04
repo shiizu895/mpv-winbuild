@@ -1,0 +1,88 @@
+From 0e797629418e684de43f04303eb1308231584781 Mon Sep 17 00:00:00 2001
+From: shiizu895 <60022265+shiizu895@users.noreply.github.com>
+Date: Sat, 26 Apr 2025 15:13:28 +0200
+Subject: [PATCH] Revert "win32: fix window size restore after maximize state"
+
+Reverts 6667b97 and 6da3a15
+Fixes https://github.com/mpv-player/mpv/issues/15592
+---
+ video/out/w32_common.c | 23 +++++------------------
+ 1 file changed, 5 insertions(+), 18 deletions(-)
+
+diff --git a/video/out/w32_common.c b/video/out/w32_common.c
+index 26dd2c36f7..63c25ba5ab 100644
+--- a/video/out/w32_common.c
++++ b/video/out/w32_common.c
+@@ -1071,7 +1071,7 @@ static void update_fullscreen_state(struct vo_w32_state *w32)
+     m_config_cache_write_opt(w32->opts_cache,
+                              &w32->opts->fullscreen);
+ 
+-    if (toggle_fs && (!w32->opts->window_maximized || w32->unmaximize)) {
++    if (toggle_fs) {
+         if (w32->current_fs) {
+             // Save window rect when switching to fullscreen.
+             w32->prev_windowrc = w32->windowrc;
+@@ -1106,8 +1106,6 @@ static void update_minimized_state(struct vo_w32_state *w32)
+     }
+ }
+ 
+-static void update_window_state(struct vo_w32_state *w32);
+-
+ static void update_maximized_state(struct vo_w32_state *w32, bool leaving_fullscreen)
+ {
+     if (w32->parent)
+@@ -1117,11 +1115,6 @@ static void update_maximized_state(struct vo_w32_state *w32, bool leaving_fullsc
+     if (w32->current_fs && !leaving_fullscreen)
+         return;
+ 
+-    bool toggle = w32->opts->window_maximized ^ IsMaximized(w32->window);
+-
+-    if (toggle && !w32->current_fs && w32->opts->window_maximized)
+-        w32->prev_windowrc = w32->windowrc;
+-
+     WINDOWPLACEMENT wp = { .length = sizeof wp };
+     GetWindowPlacement(w32->window, &wp);
+ 
+@@ -1143,11 +1136,6 @@ static void update_maximized_state(struct vo_w32_state *w32, bool leaving_fullsc
+     }
+ 
+     update_window_style(w32);
+-
+-    if (toggle && !w32->current_fs && !w32->opts->window_maximized) {
+-        w32->windowrc = w32->prev_windowrc;
+-        update_window_state(w32);
+-    }
+ }
+ 
+ static bool is_visible(HWND window)
+@@ -1182,7 +1170,7 @@ static void update_window_state(struct vo_w32_state *w32)
+     // doesn't change the window maximized state.
+     // ShowWindow(SW_SHOWNOACTIVATE) can't be used here because it tries to
+     // "restore" the window to its size before it's maximized.
+-    if (w32->unmaximize && !w32->current_fs) {
++    if (w32->unmaximize) {
+         WINDOWPLACEMENT wp = { .length = sizeof wp };
+         GetWindowPlacement(w32->window, &wp);
+         wp.showCmd = SW_SHOWNOACTIVATE;
+@@ -2336,8 +2324,7 @@ static int gui_thread_control(struct vo_w32_state *w32, int request, void *arg)
+         if (!w32->window_bounds_initialized)
+             return VO_FALSE;
+ 
+-        RECT *rc = (w32->current_fs || w32->opts->window_maximized)
+-                        ? &w32->prev_windowrc : &w32->windowrc;
++        RECT *rc = w32->current_fs ? &w32->prev_windowrc : &w32->windowrc;
+         s[0] = rect_w(*rc);
+         s[1] = rect_h(*rc);
+         return VO_TRUE;
+@@ -2351,7 +2338,7 @@ static int gui_thread_control(struct vo_w32_state *w32, int request, void *arg)
+         RECT *rc = w32->current_fs ? &w32->prev_windowrc : &w32->windowrc;
+         resize_and_move_rect(w32, rc, s[0], s[1]);
+ 
+-        if (w32->opts->window_maximized && !w32->current_fs) {
++        if (w32->opts->window_maximized) {
+             w32->unmaximize = true;
+         }
+         w32->fit_on_screen = true;
+-- 
+2.49.0.windows.1
+
