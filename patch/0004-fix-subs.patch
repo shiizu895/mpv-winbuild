@@ -1,0 +1,65 @@
+From dc6b5e52160963117a855d4b9ead57e6fcee320c Mon Sep 17 00:00:00 2001
+From: shiizu895 <60022265+shiizu895@users.noreply.github.com>
+Date: Thu, 4 Dec 2025 08:57:57 +0100
+Subject: [PATCH] fix subs
+
+---
+ packages/fontconfig.cmake | 2 +-
+ packages/freetype2.cmake  | 1 +
+ packages/harfbuzz.cmake   | 2 +-
+ packages/libass.cmake     | 1 +
+ 4 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/packages/fontconfig.cmake b/packages/fontconfig.cmake
+index 2d322a9..f270454 100644
+--- a/packages/fontconfig.cmake
++++ b/packages/fontconfig.cmake
+@@ -8,7 +8,7 @@ ExternalProject_Add(fontconfig
+     SOURCE_DIR ${SOURCE_LOCATION}
+     UPDATE_COMMAND ""
+     GIT_REMOTE_NAME origin
+-    GIT_TAG main
++    GIT_RESET 61e603f2a5096f7557f0f41c20d250770e893851
+     GIT_CLONE_FLAGS "--filter=tree:0"
+     PATCH_COMMAND ${EXEC} git am --3way ${CMAKE_CURRENT_SOURCE_DIR}/fontconfig-*.patch
+     CONFIGURE_COMMAND ""
+diff --git a/packages/freetype2.cmake b/packages/freetype2.cmake
+index 1b5ca64..6bb7066 100644
+--- a/packages/freetype2.cmake
++++ b/packages/freetype2.cmake
+@@ -6,6 +6,7 @@ ExternalProject_Add(freetype2
+     GIT_REPOSITORY https://github.com/freetype/freetype.git
+     SOURCE_DIR ${SOURCE_LOCATION}
+     GIT_CLONE_FLAGS "--filter=tree:0"
++	GIT_RESET 2d1abd3bbb4d2396ed63b3e5accd66724cf62307
+     GIT_SUBMODULES ""
+     UPDATE_COMMAND ""
+     CONFIGURE_COMMAND ${EXEC} CONF=1 meson setup <BINARY_DIR> <SOURCE_DIR>
+diff --git a/packages/harfbuzz.cmake b/packages/harfbuzz.cmake
+index 5248f25..2e67f5b 100644
+--- a/packages/harfbuzz.cmake
++++ b/packages/harfbuzz.cmake
+@@ -5,7 +5,7 @@ ExternalProject_Add(harfbuzz
+     GIT_REPOSITORY https://github.com/harfbuzz/harfbuzz.git
+     SOURCE_DIR ${SOURCE_LOCATION}
+     GIT_REMOTE_NAME origin
+-    GIT_TAG main
++    GIT_RESET 63cdd745ffc77150b702a1800f5f961842db25f8
+     GIT_CLONE_FLAGS "--sparse --filter=tree:0"
+     GIT_CLONE_POST_COMMAND "sparse-checkout set --no-cone /* !test"
+     UPDATE_COMMAND ""
+diff --git a/packages/libass.cmake b/packages/libass.cmake
+index ed27477..1f2c712 100644
+--- a/packages/libass.cmake
++++ b/packages/libass.cmake
+@@ -9,6 +9,7 @@ ExternalProject_Add(libass
+     GIT_REPOSITORY https://github.com/libass/libass.git
+     SOURCE_DIR ${SOURCE_LOCATION}
+     GIT_CLONE_FLAGS "--filter=tree:0"
++	GIT_RESET 695509365f152bd28720a0c0e036d46836ee9345
+     UPDATE_COMMAND ""
+     CONFIGURE_COMMAND ${EXEC} CONF=1 meson setup <BINARY_DIR> <SOURCE_DIR>
+         --prefix=${MINGW_INSTALL_PREFIX}
+-- 
+2.52.0.windows.1
+

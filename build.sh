@@ -124,6 +124,7 @@ prepare() {
         cd ./release
         download_mpv_package
         cd ./mpv-packaging-master
+        rm -rf ./mpv-root/updater.bat ./mpv-root/installer
         cd ../..
     fi
 }
